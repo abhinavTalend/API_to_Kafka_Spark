@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:TalendProperties="http://www.talend.org/properties">
+  <TalendProperties:Property xmi:id="_bSMOgEXnEe6D4YGyL1HWLw" id="_bSLncEXnEe6D4YGyL1HWLw" label="Load_RDS" version="0.1" statusCode="" item="_bSMOgkXnEe6D4YGyL1HWLw" displayName="Load_RDS">
+    <author href="../../talend.project#_c_aPUEH3Ee6oTu3cuWPJ4g"/>
+    <additionalProperties xmi:id="_bSz5kEXnEe6D4YGyL1HWLw" key="created_product_fullname" value="Talend Cloud Data Fabric"/>
+    <additionalProperties xmi:id="_bSz5kUXnEe6D4YGyL1HWLw" key="created_product_version" value="8.0.1.20230515_1349-patch"/>
+    <additionalProperties xmi:id="_bSz5kkXnEe6D4YGyL1HWLw" key="created_date" value="2023-08-28T17:11:16.649-0400"/>
+    <additionalProperties xmi:id="_bSz5k0XnEe6D4YGyL1HWLw" key="modified_product_fullname" value="Talend Cloud Data Fabric"/>
+    <additionalProperties xmi:id="_bSz5lEXnEe6D4YGyL1HWLw" key="modified_product_version" value="8.0.1.20230815_1353-patch"/>
+    <additionalProperties xmi:id="_bSz5lUXnEe6D4YGyL1HWLw" key="modified_date" value="2023-10-20T12:13:53.133-0500"/>
+  </TalendProperties:Property>
+  <TalendProperties:ItemState xmi:id="_bSMOgUXnEe6D4YGyL1HWLw" path="Employ_Data_End_to_End_Use_Case"/>
+  <TalendProperties:ProcessItem xmi:id="_bSMOgkXnEe6D4YGyL1HWLw" property="_bSMOgEXnEe6D4YGyL1HWLw" state="_bSMOgUXnEe6D4YGyL1HWLw">
+    <process href="Load_RDS_0.1.item#/"/>
+  </TalendProperties:ProcessItem>
+</xmi:XMI>

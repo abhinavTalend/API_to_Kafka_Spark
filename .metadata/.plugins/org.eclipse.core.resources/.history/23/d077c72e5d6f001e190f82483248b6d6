@@ -1,0 +1,677 @@
+package org.talend.designer.codegen.translators.generic.component;
+
+import org.talend.core.model.process.INode;
+import org.talend.core.runtime.IAdditionalInfo;
+import org.talend.designer.codegen.config.CodeGeneratorArgument;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.core.model.process.ElementParameterParser;
+import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.metadata.IMetadataColumn;
+import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.IConnection;
+import org.talend.core.model.process.IConnectionCategory;
+import org.talend.core.model.process.EConnectionType;
+import org.talend.core.model.utils.NodeUtil;
+import java.util.List;
+
+public class ComponentBegin
+{
+  protected static String nl;
+  public static synchronized ComponentBegin create(String lineSeparator)
+  {
+    nl = lineSeparator;
+    ComponentBegin result = new ComponentBegin();
+    nl = null;
+    return result;
+  }
+
+  public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
+  protected final String TEXT_1 = "";
+  protected final String TEXT_2 = NL + NL + "final org.talend.sdk.component.runtime.manager.ComponentManager mgr_";
+  protected final String TEXT_3 = " = org.talend.sdk.component.runtime.manager.ComponentManager.instance();" + NL + "if (mgr_";
+  protected final String TEXT_4 = ".getContainer().findAll().isEmpty()) {" + NL + "    mgr_";
+  protected final String TEXT_5 = ".autoDiscoverPlugins(false, true);" + NL + "}" + NL;
+  protected final String TEXT_6 = NL + "final java.util.Map<String, String> configuration_";
+  protected final String TEXT_7 = " = new java.util.HashMap<>();" + NL + "final java.util.Map<String, String> registry_metadata_";
+  protected final String TEXT_8 = " = new java.util.HashMap<>();";
+  protected final String TEXT_9 = NL + "                        configuration_";
+  protected final String TEXT_10 = ".put(\"";
+  protected final String TEXT_11 = "\",";
+  protected final String TEXT_12 = ");";
+  protected final String TEXT_13 = NL + "                        registry_metadata_";
+  protected final String TEXT_14 = ".put(\"length\", \"";
+  protected final String TEXT_15 = "\");" + NL + "                        registry_metadata_";
+  protected final String TEXT_16 = ".put(\"precision\", \"";
+  protected final String TEXT_17 = ".put(\"pattern\", \"";
+  protected final String TEXT_18 = "\");";
+  protected final String TEXT_19 = NL + "                                configuration_";
+  protected final String TEXT_20 = "[";
+  protected final String TEXT_21 = "].label\", \"";
+  protected final String TEXT_22 = "].originalDbColumnName\", \"";
+  protected final String TEXT_23 = "].pattern\", \"";
+  protected final String TEXT_24 = "].defaultValue\", \"";
+  protected final String TEXT_25 = "].key\", \"";
+  protected final String TEXT_26 = "].nullable\", \"";
+  protected final String TEXT_27 = "].talendType\", \"";
+  protected final String TEXT_28 = "].type\", \"";
+  protected final String TEXT_29 = "].length\", \"";
+  protected final String TEXT_30 = "].precision\", \"";
+  protected final String TEXT_31 = "].comment\", \"";
+  protected final String TEXT_32 = NL + "                            configuration_";
+  protected final String TEXT_33 = "]\", \"";
+  protected final String TEXT_34 = NL + "                // ";
+  protected final String TEXT_35 = " is hidden, skipping.";
+  protected final String TEXT_36 = NL + "                    globalMap.putIfAbsent(\"MAX_BATCH_SIZE_";
+  protected final String TEXT_37 = "\", Integer.parseInt(";
+  protected final String TEXT_38 = "));";
+  protected final String TEXT_39 = NL + "                    configuration_";
+  protected final String TEXT_40 = "\", ";
+  protected final String TEXT_41 = NL + "            final java.util.Map<String, String> config_from_connection_";
+  protected final String TEXT_42 = " = (java.util.Map<String, String>)globalMap.get(\"configuration_";
+  protected final String TEXT_43 = "\");" + NL + "            final String conn_param_prefix_";
+  protected final String TEXT_44 = " = \"";
+  protected final String TEXT_45 = "\";" + NL + "            if(config_from_connection_";
+  protected final String TEXT_46 = "!=null && conn_param_prefix_";
+  protected final String TEXT_47 = "!=null) {" + NL + "                final String prefix_";
+  protected final String TEXT_48 = " = config_from_connection_";
+  protected final String TEXT_49 = ".keySet().stream()" + NL + "                    .filter(key_";
+  protected final String TEXT_50 = " -> key_";
+  protected final String TEXT_51 = ".endsWith(\".__version\"))" + NL + "                    .findFirst()" + NL + "                    .map(key_";
+  protected final String TEXT_52 = ".substring(0, key_";
+  protected final String TEXT_53 = ".lastIndexOf(\".__version\")))" + NL + "                    .orElse(null);" + NL + "                    " + NL + "                if(prefix_";
+  protected final String TEXT_54 = "!=null) {" + NL + "                    config_from_connection_";
+  protected final String TEXT_55 = ".entrySet().stream().filter(entry_";
+  protected final String TEXT_56 = "->entry_";
+  protected final String TEXT_57 = ".getKey().startsWith(prefix_";
+  protected final String TEXT_58 = ")).forEach(entry_";
+  protected final String TEXT_59 = "->{" + NL + "                        configuration_";
+  protected final String TEXT_60 = ".put(entry_";
+  protected final String TEXT_61 = ".getKey().replaceFirst(prefix_";
+  protected final String TEXT_62 = ", conn_param_prefix_";
+  protected final String TEXT_63 = "), entry_";
+  protected final String TEXT_64 = ".getValue());" + NL + "                    });" + NL + "                }" + NL + "            }";
+  protected final String TEXT_65 = NL + NL + "mgr_";
+  protected final String TEXT_66 = ".findPlugin(\"";
+  protected final String TEXT_67 = "\")" + NL + "    .orElseThrow(() -> new IllegalStateException(\"Can't find the plugin : ";
+  protected final String TEXT_68 = "\"))" + NL + "    .get(org.talend.sdk.component.runtime.manager.ContainerComponentRegistry.class)" + NL + "    .getServices()" + NL + "    .stream()" + NL + "    .forEach(serviceMeta_";
+  protected final String TEXT_69 = " -> {" + NL + "        serviceMeta_";
+  protected final String TEXT_70 = ".getActions().stream().filter(actionMeta_";
+  protected final String TEXT_71 = " -> \"create_connection\".equals(actionMeta_";
+  protected final String TEXT_72 = ".getType())).forEach(actionMeta_";
+  protected final String TEXT_73 = " -> {" + NL + "            synchronized (serviceMeta_";
+  protected final String TEXT_74 = ".getInstance()) {" + NL + "                org.talend.sdk.component.runtime.di.studio.RuntimeContextInjector.injectService(mgr_";
+  protected final String TEXT_75 = ", \"";
+  protected final String TEXT_76 = "\", new org.talend.sdk.component.api.context.RuntimeContextHolder(\"";
+  protected final String TEXT_77 = "\", globalMap));" + NL + "                " + NL + "                Object connnection_";
+  protected final String TEXT_78 = " = actionMeta_";
+  protected final String TEXT_79 = ".getInvoker().apply(configuration_";
+  protected final String TEXT_80 = ");" + NL + "" + NL + "                globalMap.put(\"conn_";
+  protected final String TEXT_81 = "\", connnection_";
+  protected final String TEXT_82 = ");" + NL + "                ";
+  protected final String TEXT_83 = NL + "                configuration_";
+  protected final String TEXT_84 = "\", \"securityFakePassword\");";
+  protected final String TEXT_85 = NL + "                globalMap.put(\"configuration_";
+  protected final String TEXT_86 = "\", configuration_";
+  protected final String TEXT_87 = ");" + NL + "            }" + NL + "        });" + NL + "    });";
+  protected final String TEXT_88 = NL;
+
+  public String generate(Object argument)
+  {
+    final StringBuffer stringBuffer = new StringBuffer();
+    /*
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+   Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
+    stringBuffer.append(TEXT_1);
+    
+final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
+final INode node = INode.class.cast(codeGenArgument.getArgument());
+if(node == null) {
+    throw new IllegalArgumentException("node cannot be null");
+}
+final String cid = node.getUniqueName();
+final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+final String plugin = (String)node.getElementParameter("___TACOKIT_COMPONENT_PLUGIN_NAME___").getValue();
+final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
+
+    stringBuffer.append(TEXT_2);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_3);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_4);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_5);
+    /*
+  Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+   Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
+    stringBuffer.append(TEXT_6);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_7);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_8);
+    
+    final java.util.Map<String, String> configurationToChange = new java.util.HashMap<String, String>();
+    
+    final List<ElementParameter> params = List.class.cast(node.getElementParametersWithChildrens());
+    
+    //set the datastore parameters when use existed connection for passing the parameter check like @Required and @Pattern 
+    final boolean reuseConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    String conn_param_prefix = null;
+    java.util.List<String> passwordKeys = new java.util.ArrayList<String>();
+    
+    if (params != null && !params.isEmpty()) {
+        for (final ElementParameter p : params) {
+            Object pluginValue = p.getTaggedValue("org.talend.sdk.component.source");
+            if(pluginValue == null || !String.class.cast(pluginValue).equalsIgnoreCase("tacokit")) {
+                continue;
+            }
+            try {
+                if (!(Boolean) org.talend.core.runtime.IAdditionalInfo.class.cast(p).func("isPersisted")) {
+                    continue;
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            //TODO: modify this part for Maps and nested lists.
+            if (p.getFieldType() == EParameterFieldType.TABLE || p.getFieldType() == EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE) {
+                java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
+                String[] items = p.getListItemsDisplayCodeName();
+                String tableName = p.getName().replace('$', '.');
+                boolean primitiveTable = items.length == 1 && items[0].equals(tableName + "[]");
+                String tableNamePrefix = tableName + "[]";
+                
+                java.util.List<String> changable = java.util.List.class.cast(p.getTaggedValue("org.talend.sdk.component.field.changable"));
+                
+                for (int i = 0; i < tableValues.size(); i++) {
+                    java.util.Map<String, String> lineValues = tableValues.get(i);
+                    for (int j = 0; j < items.length; j++) {
+                        boolean canChange = false;
+                        
+                        String key = tableName + "[" + i + "]";
+                        if (!primitiveTable) {
+                            final String columnName = items[j].substring(tableNamePrefix.length(), items[j].length());
+                            key = key + columnName;
+                            
+                            if(changable!=null && changable.contains(items[j])) {
+                                canChange = true;
+                            }
+                        }
+                        String value = lineValues.get(items[j]);
+                        
+                        if(canChange) {
+                            configurationToChange.put(key, value);
+                        }
+                        
+                        if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                            if (org.talend.core.model.utils.TalendTextUtils.isEnclosed(value)) {
+                                value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                            }
+                            value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                        }
+
+    stringBuffer.append(TEXT_9);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(key);
+    stringBuffer.append(TEXT_11);
+    stringBuffer.append(value);
+    stringBuffer.append(TEXT_12);
+    
+                    }
+                }
+            } else if (p.getFieldType() == EParameterFieldType.SCHEMA_TYPE || p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
+                final String parameterName = p.getName();
+                IConnection connection = null;
+                final List<? extends IConnection> connections;
+                if (p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
+                    connections = NodeUtil.getOutgoingConnections(node, p.getContext());
+                } else {
+                    //TODO may remove this and EParameterFieldType.TACOKIT_INPUT_SCHEMA support
+                    connections = NodeUtil.getIncomingConnections(node, p.getContext());
+                }
+                
+                IMetadataTable metaTable = null;
+                if(connections != null && !connections.isEmpty()) {
+                    connection = connections.get(0);
+                    metaTable = (connection!=null) ? connection.getMetadataTable() : null;
+                } else if("FLOW".equals(p.getContext())) {
+                    //pass the connector schema when no output line case
+                    //for example: tfixedflowinput==>tjdbcoutput, we need the column key/db column name info in studio design schema
+                    List<IMetadataTable> metadataTables = node.getMetadataList();
+                    if(metadataTables!=null && !metadataTables.isEmpty()) {
+                        metaTable = metadataTables.get(0);
+                    }
+                }
+                
+                if(metaTable != null) {
+                    List<IMetadataColumn> columns = metaTable.getListColumns();
+                    boolean hasDynamic = false;
+                    for (int i = 0; i < columns.size(); i++) {
+                        IMetadataColumn col = columns.get(i);
+                        if ("id_Dynamic".equals(col.getTalendType())) {
+                            hasDynamic = true;
+                            int length = col.getLength() == null ? -1 : col.getLength();
+                            int precision = col.getPrecision() == null ? -1 : col.getPrecision();
+                            String pattern = col.getPattern() == null ? "" : col.getPattern();
+                        
+    stringBuffer.append(TEXT_13);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_14);
+    stringBuffer.append(length);
+    stringBuffer.append(TEXT_15);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_16);
+    stringBuffer.append(precision);
+    stringBuffer.append(TEXT_15);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_17);
+    stringBuffer.append(org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern));
+    stringBuffer.append(TEXT_18);
+    
+                        }
+                    }
+                    
+                    String [] columnMetas = java.util.Optional.ofNullable(p.getListItemsDisplayCodeName()).orElse(new String[0]);
+                    List<String> metas = new java.util.ArrayList();
+                    for (String k : columnMetas){
+                        metas.add(k.substring(k.lastIndexOf(".")+1));
+                    }
+                    
+                    final boolean isFullSchema = metas.contains("talendType");
+                    
+                    if (isFullSchema || !hasDynamic){
+                        for(int i = 0; i < columns.size(); i++) {
+                            IMetadataColumn column = columns.get(i);
+                            for (String meta : metas){
+                                if (meta.equals("label")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_21);
+    stringBuffer.append(column.getLabel());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("originalDbColumnName")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_22);
+    stringBuffer.append(column.getOriginalDbColumnName());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("pattern")){
+                                String pattern = column.getPattern() == null ? "" : column.getPattern();
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_23);
+    stringBuffer.append(org.talend.core.model.utils.TalendTextUtils.removeQuotes(pattern));
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("defaultValue")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_24);
+    stringBuffer.append(column.getDefault());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("key")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_25);
+    stringBuffer.append(column.isKey());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("nullable")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_26);
+    stringBuffer.append(column.isNullable());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("talendType")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_27);
+    stringBuffer.append(column.getTalendType());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("type")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_28);
+    stringBuffer.append(column.getType());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("length")){
+                                int length = column.getLength() == null ? -1 : column.getLength();
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_29);
+    stringBuffer.append(length);
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("precision")){
+                                int precision = column.getPrecision() == null ? -1 : column.getPrecision();
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_30);
+    stringBuffer.append(precision);
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                                if (meta.equals("comment")){
+                                
+    stringBuffer.append(TEXT_19);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_31);
+    stringBuffer.append(column.getComment());
+    stringBuffer.append(TEXT_18);
+    
+                                }
+                            }
+                            if (metas.size() == 0){
+                            
+    stringBuffer.append(TEXT_32);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(parameterName);
+    stringBuffer.append(TEXT_20);
+    stringBuffer.append(i);
+    stringBuffer.append(TEXT_33);
+    stringBuffer.append(column.getLabel());
+    stringBuffer.append(TEXT_18);
+    
+                            }
+                        }
+                    }
+                }
+            } else {
+                final String key;
+                if(!p.getName().contains("$")){
+                    key = p.getName();
+                }else{
+                    final StringBuilder keyBuilder = new StringBuilder();
+                    for (String part : p.getName().split("\\.")) {
+                        if (keyBuilder.length() != 0) {
+                            keyBuilder.append(".");
+                        }
+                        if (part.contains("$") && !part.startsWith("$")) {
+                            keyBuilder.append(part.replace("$", "."));
+                        } else {
+                            keyBuilder.append(part);
+                        }
+                    }
+                    key = keyBuilder.toString();
+                }
+                // Do not put in configuration hidden parameters
+                if (!p.isShow(params) && !key.endsWith("__version")) {
+                
+    stringBuffer.append(TEXT_34);
+    stringBuffer.append(key);
+    stringBuffer.append(TEXT_35);
+    
+                    continue;
+                }
+                String value = null;
+                if(p.getFieldType() == EParameterFieldType.PASSWORD) {
+                    value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
+                    if (value == null || value.trim().isEmpty()) {
+                        value = null;
+                    } else {
+                        passwordKeys.add(key);
+                    }
+                } else {
+                    value = ElementParameterParser.getStringElementParameterValue(p);
+                    // fix MEMO Types: behave now as TEXT_AREA
+                    if (p.getFieldType().toString().startsWith("MEMO")){
+                        value = value.replace("\n", " ").replace("\r", " ");
+                    }
+                    if (org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                        value = "String.valueOf(" + value + ")";
+                    }
+                    else {
+                        if (org.talend.core.model.utils.TalendTextUtils.isEnclosed(value)) {
+                            value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                        }
+                        
+                        Object sourceName = p.getTaggedValue("org.talend.sdk.component.source");
+                        boolean isTacokit = "tacokit".equalsIgnoreCase(String.valueOf(sourceName));
+                        if(isTacokit) {
+                        	value = org.talend.core.model.utils.TalendTextUtils.addQuotes(org.talend.core.utils.TalendQuoteUtils.checkAndAddBackslashes(value));
+                        } else {
+                        	value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                        }
+                        
+                    }
+                }
+                if (value != null) {
+                 if(key.endsWith("$maxBatchSize")){
+                  
+    stringBuffer.append(TEXT_36);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_37);
+    stringBuffer.append(value);
+    stringBuffer.append(TEXT_38);
+    
+                 } else if(p.getFieldType() == EParameterFieldType.CLOSED_LIST) {
+                   String valueTemp = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                    if ("".equals(valueTemp)) {
+                       String[] listItemsDisplayCodeValue = p.getListItemsDisplayCodeName();
+                       if(listItemsDisplayCodeValue != null && listItemsDisplayCodeValue.length > 0){
+                          valueTemp = listItemsDisplayCodeValue[0];
+                          value = org.talend.core.model.utils.TalendTextUtils.addQuotes(valueTemp);
+                       }
+                    }
+                }
+                
+                //need to get the common prefix for datastore
+                if (reuseConnection && key.matches("\\w+\\.\\w+\\.\\w+\\.__version") && !p.isShow(params)) {
+                    conn_param_prefix = key.substring(0, key.lastIndexOf(".__version"));
+                }
+
+    stringBuffer.append(TEXT_39);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(key);
+    stringBuffer.append(TEXT_40);
+    stringBuffer.append(value);
+    stringBuffer.append(TEXT_12);
+    
+                } // else do not put value in configuration
+            }
+        }
+        String datastorePath = ElementParameterParser.getValue(node,"__DATASTORE_PATH__");
+        if (reuseConnection && datastorePath != null && !datastorePath.isEmpty()) {
+            conn_param_prefix = datastorePath;
+        }
+
+        if (reuseConnection && conn_param_prefix!=null) {
+            final String connectionKey = ElementParameterParser.getValue(node,"__CONNECTION__");
+
+    stringBuffer.append(TEXT_41);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_42);
+    stringBuffer.append(connectionKey);
+    stringBuffer.append(TEXT_43);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_44);
+    stringBuffer.append(conn_param_prefix);
+    stringBuffer.append(TEXT_45);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_46);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_47);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_48);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_49);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_50);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_51);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_50);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_52);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_53);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_54);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_55);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_56);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_57);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_58);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_59);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_60);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_61);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_62);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_63);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_64);
+    
+        }
+    }
+
+    stringBuffer.append(TEXT_65);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_66);
+    stringBuffer.append(plugin);
+    stringBuffer.append(TEXT_67);
+    stringBuffer.append(plugin);
+    stringBuffer.append(TEXT_68);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_69);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_70);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_71);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_72);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_73);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_74);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_75);
+    stringBuffer.append(plugin);
+    stringBuffer.append(TEXT_76);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_77);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_78);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_79);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_80);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_81);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_82);
+    for(String passwordKey : passwordKeys) {
+    stringBuffer.append(TEXT_83);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_10);
+    stringBuffer.append(passwordKey);
+    stringBuffer.append(TEXT_84);
+    }
+    stringBuffer.append(TEXT_85);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_86);
+    stringBuffer.append(cid);
+    stringBuffer.append(TEXT_87);
+    stringBuffer.append(TEXT_88);
+    return stringBuffer.toString();
+  }
+}
